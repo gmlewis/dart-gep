@@ -1,7 +1,7 @@
 #!/bin/bash -e
+# -*- compile-command: "./df-all.sh"; -*-
 dfs=$(find . -name df.sh)
 for i in ${dfs}; do
-    echo ${i}
     pushd ${i%/*}
     ./df.sh
     popd
