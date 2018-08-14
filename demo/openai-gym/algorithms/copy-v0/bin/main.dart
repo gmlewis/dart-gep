@@ -36,7 +36,7 @@ main(List<String> arguments) async {
     var obs = await client.reset(id);
     print('First observation: $obs');
     for (var stepNum = 1; stepNum <= numSteps; stepNum++) {
-      var action = model.getAction(obs);
+      var action = model.evaluate(obs);
       print('Taking action: $action');
 
       // Take the action, getting a new observation, a reward,

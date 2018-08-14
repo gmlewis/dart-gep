@@ -2,8 +2,8 @@
 
 import 'package:gym/gym.dart'; // OpenAI Gym
 
-import './genome.dart';
-import './weighted_symbol.dart';
+import 'genome.dart';
+import 'weighted_symbol.dart';
 
 /// Gene Expression Programming (GEP) library in Dart.
 class GEP {
@@ -26,8 +26,8 @@ class GEP {
     return GEP(numGenomes: numGenomes);
   }
 
-  dynamic getAction(dynamic observation) {
-    throw ('getAction not implemented yet');
+  dynamic evaluate(dynamic observation) {
+    throw ('evaluate not implemented yet');
   }
 
   evolve(double reward) {

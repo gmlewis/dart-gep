@@ -4,6 +4,6 @@
 class WeightedSymbol {
   WeightedSymbol();
 
-  String symbol;
+  Symbol symbol;
   double weight;
 }

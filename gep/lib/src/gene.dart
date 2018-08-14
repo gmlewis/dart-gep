@@ -5,5 +5,5 @@
 class Gene {
   Gene();
 
-  List<String> symbols;
+  List<Symbol> symbols;
 }
