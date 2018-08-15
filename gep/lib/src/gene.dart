@@ -1,5 +1,7 @@
 // -*- compile-command: "cd ../.. && ./df.sh"; -*-
 
+import 'dart:mirrors';
+
 import 'package:meta/meta.dart';
 
 /// Gene represents a single GEP gene.
@@ -51,6 +53,13 @@ class Gene<T> {
   Map<Symbol, int> symbolMap;
 
   T get zeroValue => null;
+
+  // toString returns the Karva representation of the Gene.
+  String toString() {
+    var syms =
+        List.generate(symbols.length, (i) => MirrorSystem.getName(symbols[i]));
+    return syms.join('.');
+  }
 }
 
 class DoubleGene extends Gene<double> {
