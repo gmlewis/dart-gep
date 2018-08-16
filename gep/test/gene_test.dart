@@ -5,22 +5,31 @@ import 'package:test/test.dart';
 
 void main() {
   group('A group of tests for Genes', () {
-    test('Gene builds from "+" Karva expression', () {
-      var karva = '+';
+    test('Gene builds from simple Karva expression', () {
+      var karva = '+.d0.d1';
       var gene = IntGene.fromKarva(karva);
-      expect(gene.symbols, [Symbol('+')]);
+      expect(gene.symbols, [
+        Symbol('+'),
+        Symbol('d0'),
+        Symbol('d1'),
+      ]);
       expect(gene.constants, []);
       expect(gene.headSize, 0);
-      expect(gene.numTerminals, 0);
+      expect(gene.numTerminals, 2);
       expect(gene.numConstants, 0);
       expect(gene.zeroValue, 0);
       expect(gene.toString(), karva);
       expect(gene.argOrder(), [
-        [1, 2]
+        [1, 2],
+        null,
+        null
       ]);
-      // expect(gene.symbolMap, {
-      //   Symbol('+'): 1,
-      // });
+      expect(gene.model([1, 2]), 3);
+      expect(gene.symbolMap, {
+        Symbol('+'): 1,
+        Symbol('d0'): 1,
+        Symbol('d1'): 1,
+      });
     });
 
     test('Gene builds from Karva expression with two inputs', () {
@@ -66,11 +75,12 @@ void main() {
         null,
         null
       ]);
-      // expect(gene.symbolMap, {
-      //   Symbol('+'): 1,
-      //   Symbol('d0'): 1,
-      //   Symbol('d1'): 1,
-      // });
+      expect(gene.model([1.0, 2.0]), 3.0);
+      expect(gene.symbolMap, {
+        Symbol('+'): 1,
+        Symbol('d0'): 1,
+        Symbol('d1'): 1,
+      });
     });
   });
 }

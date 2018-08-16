@@ -9,10 +9,10 @@ import 'functions.dart';
 /// Gene represents a single GEP gene.
 /// It contains the symbols useds in the gene's expression.
 class Gene<T> {
-  Gene() {}
+  Gene(this.allFuncs) {}
 
   /// Creates a new gene based on the Karva string representation.
-  Gene.fromKarva(String karva)
+  Gene.fromKarva(String karva, this.allFuncs)
       : symbols = [],
         constants = [],
         headSize = 0,
@@ -35,11 +35,15 @@ class Gene<T> {
     });
     constants = List<T>.filled(numConstants, zeroValue);
     numTerminals = numInputs + numConstants;
+
+    var ao = argOrder();
+    model = buildModel(0, ao);
   }
 
+  final Map<Symbol, Func<T>> allFuncs;
   List<Symbol> symbols;
   List<T> constants;
-  Map<Symbol, Func> allFuncs;
+  FuncImpl<T> model;
 
   @visibleForTesting
   int headSize;
@@ -90,29 +94,76 @@ class Gene<T> {
     });
     return result;
   }
+
+  // buildModel recursively builds a function that implements the Karva
+  // expression. While it build, it also builds up the actual symbol
+  // usage within [symbolMap].
+  @visibleForTesting
+  buildModel(int symbolIndex, List<List<int>> argOrder) {
+    if (symbolIndex >= symbols.length) {
+      throw 'bad symbolIndex $symbolIndex for symbols $symbols';
+    }
+    var sym = symbols[symbolIndex];
+    symbolMap[sym]++;
+    if (allFuncs.containsKey(sym)) {
+      var f = allFuncs[sym];
+      var args = argOrder[symbolIndex];
+      var funcs = List.generate(
+          args.length, (index) => buildModel(args[index], argOrder));
+      return (List<T> input) {
+        var values =
+            List.generate<T>(funcs.length, (index) => funcs[index](input));
+        return f.func(values);
+      };
+    } else {
+      var symName = MirrorSystem.getName(sym);
+      if (symName.startsWith('d')) {
+        // No named symbol found - look for inputs and constants
+        var index = int.tryParse(symName.substring(1));
+        if (index == null) {
+          throw 'unable to parse input index: sym=$symName';
+        }
+        return (List<T> input) {
+          if (index >= input.length) {
+            print(
+                'error evaluating gene $sym: index $index >= d length (${input.length})');
+            return 0.0;
+          }
+          return input[index];
+        };
+      } else if (symName.startsWith('c')) {
+        var index = int.tryParse(symName.substring(1));
+        if (index == null) {
+          throw 'unable to parse constant index: sym=$symName';
+        }
+        return (List<T> input) {
+          if (index >= constants.length) {
+            print(
+                'error evaluating gene $sym: index $index >= c length (${input.length})');
+            return 0.0;
+          }
+          return constants[index];
+        };
+      }
+    }
+    throw 'unable to return function: unknown gene symbol $sym';
+  }
 }
 
 class DoubleGene extends Gene<double> {
-  DoubleGene() {
-    allFuncs = DoubleFunctions().all;
-  }
+  DoubleGene() : super(DoubleFunctions().all);
 
-  DoubleGene.fromKarva(String karva) : super.fromKarva(karva) {
-    allFuncs = DoubleFunctions().all;
-  }
+  DoubleGene.fromKarva(String karva)
+      : super.fromKarva(karva, DoubleFunctions().all);
 
   @override
   double get zeroValue => 0.0;
 }
 
 class IntGene extends Gene<int> {
-  IntGene() {
-    allFuncs = IntFunctions().all;
-  }
+  IntGene() : super(IntFunctions().all);
 
-  IntGene.fromKarva(String karva) : super.fromKarva(karva) {
-    allFuncs = IntFunctions().all;
-  }
+  IntGene.fromKarva(String karva) : super.fromKarva(karva, IntFunctions().all);
 
   @override
   int get zeroValue => 0;
