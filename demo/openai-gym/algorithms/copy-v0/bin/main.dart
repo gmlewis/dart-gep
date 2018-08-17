@@ -25,7 +25,7 @@ main(List<String> arguments) async {
   print('observationSpace=$observationSpace');
   // observationSpace=Space(name: Discrete, n: 6)
 
-  var model = GEP.fromOpenAI(actionSpace, observationSpace);
+  var gep = GEP.fromOpenAI(actionSpace, observationSpace);
 
   // Start monitoring to a temp directory.
   await client.startMonitor(id, '/tmp/copy-monitor');
@@ -36,7 +36,7 @@ main(List<String> arguments) async {
     var obs = await client.reset(id);
     print('First observation: $obs');
     for (var stepNum = 1; stepNum <= numSteps; stepNum++) {
-      var action = model.evaluate(obs);
+      var action = gep.evaluate(obs);
       print('Taking action: $action');
 
       // Take the action, getting a new observation, a reward,
@@ -48,7 +48,7 @@ main(List<String> arguments) async {
         print('Episode #$episode finished after $stepNum steps.');
         break;
       }
-      model.evolve(stepResult.reward);
+      gep.evolve(stepResult.reward);
     }
   }
 
