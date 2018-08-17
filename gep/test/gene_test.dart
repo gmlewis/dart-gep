@@ -5,9 +5,39 @@ import 'package:test/test.dart';
 
 void main() {
   group('A group of tests for Genes', () {
+    test('BoolGene builds from simple Karva expression', () {
+      var karva = 'And.d0.d1';
+      var gene = BoolGene.fromKarva(karva, boolNandNodes);
+      expect(gene.symbols, [
+        Symbol('And'),
+        Symbol('d0'),
+        Symbol('d1'),
+      ]);
+      expect(gene.constants, []);
+      expect(gene.headSize, 0);
+      expect(gene.numTerminals, 2);
+      expect(gene.numConstants, 0);
+      expect(gene.zeroValue, false);
+      expect(gene.toString(), karva);
+      expect(gene.argOrder(), [
+        [1, 2],
+        null,
+        null
+      ]);
+      expect(gene.model([false, false]), false);
+      expect(gene.model([false, true]), false);
+      expect(gene.model([true, false]), false);
+      expect(gene.model([true, true]), true);
+      expect(gene.symbolMap, {
+        Symbol('And'): 1,
+        Symbol('d0'): 1,
+        Symbol('d1'): 1,
+      });
+    });
+
     test('IntGene builds from simple Karva expression', () {
       var karva = '+.d0.d1';
-      var gene = IntGene.fromKarva(karva);
+      var gene = IntGene.fromKarva(karva, allIntNodes);
       expect(gene.symbols, [
         Symbol('+'),
         Symbol('d0'),
@@ -34,7 +64,7 @@ void main() {
 
     test('DoubleGene builds from simple Karva expression', () {
       var karva = '+.d0.d1';
-      var gene = DoubleGene.fromKarva(karva);
+      var gene = DoubleGene.fromKarva(karva, allDoubleNodes);
       expect(gene.symbols, [
         Symbol('+'),
         Symbol('d0'),
@@ -61,7 +91,7 @@ void main() {
 
     test('VectorIntGene builds from simple Karva expression', () {
       var karva = '+.d0.d1';
-      var gene = VectorIntGene.fromKarva(karva);
+      var gene = VectorIntGene.fromKarva(karva, allVectorIntNodes);
       expect(gene.symbols, [
         Symbol('+'),
         Symbol('d0'),
@@ -93,7 +123,7 @@ void main() {
 
     test('VectorDoubleGene builds from simple Karva expression', () {
       var karva = '+.d0.d1';
-      var gene = VectorDoubleGene.fromKarva(karva);
+      var gene = VectorDoubleGene.fromKarva(karva, allVectorDoubleNodes);
       expect(gene.symbols, [
         Symbol('+'),
         Symbol('d0'),
@@ -126,7 +156,7 @@ void main() {
 
     test('Gene builds from Karva expression with two inputs', () {
       var karva = '+.d0.d1.+.+.+.+.d0.d1.d1.d1.d0.d1.d1.d0';
-      var gene = DoubleGene.fromKarva(karva);
+      var gene = DoubleGene.fromKarva(karva, allDoubleNodes);
       expect(gene.symbols, [
         Symbol('+'),
         Symbol('d0'),

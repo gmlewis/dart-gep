@@ -14,63 +14,33 @@ class Func<T> {
   final FuncImpl<T> func;
 }
 
-/// Functions represents all functions that can be used
-/// in Karva expressions.
+/// Functions represents all functions that can be used in Karva expressions.
 abstract class Functions<T> {
-  Functions() {}
+  Functions(this.all);
 
   Map<Symbol, Func<T>> all;
 }
 
-class DoubleFunctions extends Functions<double> {
-  DoubleFunctions() {}
+class BoolFunctions extends Functions<bool> {
+  BoolFunctions(Map<Symbol, Func<bool>> all) : super(all);
+}
 
-  @override
-  Map<Symbol, Func<double>> all = {
-    Symbol('+'):
-        Func<double>('+', 2, (List<double> input) => input[0] + input[1]),
-    Symbol('-'):
-        Func<double>('-', 2, (List<double> input) => input[0] - input[1]),
-    Symbol('*'):
-        Func<double>('*', 2, (List<double> input) => input[0] * input[1]),
-  };
+class DoubleFunctions extends Functions<double> {
+  DoubleFunctions(Map<Symbol, Func<double>> all) : super(all);
 }
 
 class IntFunctions extends Functions<int> {
-  IntFunctions() {}
+  IntFunctions(Map<Symbol, Func<int>> all) : super(all);
+}
 
-  @override
-  Map<Symbol, Func<int>> all = {
-    Symbol('+'): Func<int>('+', 2, (List<int> input) => input[0] + input[1]),
-    Symbol('-'): Func<int>('-', 2, (List<int> input) => input[0] - input[1]),
-    Symbol('*'): Func<int>('*', 2, (List<int> input) => input[0] * input[1]),
-  };
+class VectorBoolFunctions extends Functions<VectorBool> {
+  VectorBoolFunctions(Map<Symbol, Func<VectorBool>> all) : super(all);
 }
 
 class VectorDoubleFunctions extends Functions<VectorDouble> {
-  VectorDoubleFunctions() {}
-
-  @override
-  Map<Symbol, Func<VectorDouble>> all = {
-    Symbol('+'): Func<VectorDouble>(
-        '+', 2, (List<VectorDouble> input) => input[0] + input[1]),
-    Symbol('-'): Func<VectorDouble>(
-        '-', 2, (List<VectorDouble> input) => input[0] - input[1]),
-    Symbol('*'): Func<VectorDouble>(
-        '*', 2, (List<VectorDouble> input) => input[0] * input[1]),
-  };
+  VectorDoubleFunctions(Map<Symbol, Func<VectorDouble>> all) : super(all);
 }
 
 class VectorIntFunctions extends Functions<VectorInt> {
-  VectorIntFunctions() {}
-
-  @override
-  Map<Symbol, Func<VectorInt>> all = {
-    Symbol('+'):
-        Func<VectorInt>('+', 2, (List<VectorInt> input) => input[0] + input[1]),
-    Symbol('-'):
-        Func<VectorInt>('-', 2, (List<VectorInt> input) => input[0] - input[1]),
-    Symbol('*'):
-        Func<VectorInt>('*', 2, (List<VectorInt> input) => input[0] * input[1]),
-  };
+  VectorIntFunctions(Map<Symbol, Func<VectorInt>> all) : super(all);
 }

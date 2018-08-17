@@ -6,11 +6,13 @@ abstract class Vector<T> {
 
   List<T> data;
 
-  // Too bad '+' isn't defined for class 'Object'!!!
-  Vector<T> operator +(Vector<T> other);
-  Vector<T> operator -(Vector<T> other);
-  Vector<T> operator *(Vector<T> other);
-  // Vector<T> operator ==(dynamic other);
+  int get length => data.length;
+
+  // // Too bad '+' isn't defined for class 'Object'!!!
+  // Vector<T> operator +(Vector<T> other);
+  // Vector<T> operator -(Vector<T> other);
+  // Vector<T> operator *(Vector<T> other);
+  // // Vector<T> operator ==(dynamic other);
 
   String toString() {
     var datum = List.generate(data.length, (i) => "${data[i]}");
@@ -20,11 +22,39 @@ abstract class Vector<T> {
   int compareTo(Vector<T> other);
 }
 
+class VectorBool extends Vector<bool> {
+  VectorBool(List<bool> data) : super(data);
+
+  @override
+  int compareTo(Vector<bool> other) {
+    if (data.length != other.data.length)
+      return data.length - other.data.length;
+    for (var i = 0; i < data.length; i++) {
+      if (data[i] == other.data[i]) continue;
+      if (!data[i]) return -1;
+      return 1;
+    }
+    return 0;
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    if (!(other is VectorBool)) return false;
+    if (data.length != other.data.length) return false;
+    for (var i = 0; i < data.length; i++) {
+      if (data[i] != other.data[i]) return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode => data.hashCode;
+}
+
 class VectorDouble extends Vector<double> {
   VectorDouble(List<double> data) : super(data);
 
   // Macro support (like Elixir) would be nice here.
-  @override
   Vector<double> operator +(Vector<double> other) {
     if (data.length != other.data.length)
       return VectorDouble([]); // Vectors must be same length.
@@ -32,7 +62,6 @@ class VectorDouble extends Vector<double> {
         data.length, (index) => data[index] + other.data[index]));
   }
 
-  @override
   Vector<double> operator -(Vector<double> other) {
     if (data.length != other.data.length)
       return VectorDouble([]); // Vectors must be same length.
@@ -40,7 +69,6 @@ class VectorDouble extends Vector<double> {
         data.length, (index) => data[index] - other.data[index]));
   }
 
-  @override
   Vector<double> operator *(Vector<double> other) {
     if (data.length != other.data.length)
       return VectorDouble([]); // Vectors must be same length.
@@ -80,7 +108,6 @@ class VectorInt extends Vector<int> {
   VectorInt(List<int> data) : super(data);
 
   // Macro support (like Elixir) would be nice here.
-  @override
   Vector<int> operator +(Vector<int> other) {
     if (data.length != other.data.length)
       return VectorInt([]); // Vectors must be same length.
@@ -88,7 +115,6 @@ class VectorInt extends Vector<int> {
         data.length, (index) => data[index] + other.data[index]));
   }
 
-  @override
   Vector<int> operator -(Vector<int> other) {
     if (data.length != other.data.length)
       return VectorInt([]); // Vectors must be same length.
@@ -96,7 +122,6 @@ class VectorInt extends Vector<int> {
         data.length, (index) => data[index] - other.data[index]));
   }
 
-  @override
   Vector<int> operator *(Vector<int> other) {
     if (data.length != other.data.length)
       return VectorInt([]); // Vectors must be same length.
