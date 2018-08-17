@@ -12,10 +12,10 @@ import 'weighted_symbol.dart';
 /// Gene represents a single GEP gene.
 /// It contains the symbols useds in the gene's expression.
 class Gene<T> {
-  Gene(this.allFuncs) {}
+  Gene() {}
 
   /// Creates a new gene based on the Karva string representation.
-  Gene.fromKarva(String karva, this.allFuncs)
+  Gene.fromKarva(String karva)
       : symbols = [],
         constants = [],
         headSize = 0,
@@ -53,7 +53,7 @@ class Gene<T> {
   // properties of the gene, and functions provide the available functions and
   // their respective weights to be used in the creation of the gene.
   Gene.random(this.headSize, int tailSize, this.numTerminals, this.numConstants,
-      List<WeightedSymbol> functions, this.allFuncs) {
+      List<WeightedSymbol> functions) {
     symbolMap = {};
     var totalWeight = numTerminals + numConstants;
     for (var f in functions) {
@@ -89,7 +89,7 @@ class Gene<T> {
     // model = buildModel(0, ao);
   }
 
-  final Map<Symbol, Func<T>> allFuncs;
+  Map<Symbol, Func<T>> get allFuncs => {};
   List<Symbol> symbols;
   List<T> constants;
   FuncImpl<T> model;
@@ -218,10 +218,9 @@ class Gene<T> {
 }
 
 class DoubleGene extends Gene<double> {
-  DoubleGene() : super(DoubleFunctions().all);
+  DoubleGene() : super();
 
-  DoubleGene.fromKarva(String karva)
-      : super.fromKarva(karva, DoubleFunctions().all);
+  DoubleGene.fromKarva(String karva) : super.fromKarva(karva);
 
   DoubleGene.random(
       {int headSize,
@@ -229,8 +228,7 @@ class DoubleGene extends Gene<double> {
       int numTerminals,
       int numConstants,
       List<WeightedSymbol> functions})
-      : super.random(headSize, tailSize, numTerminals, numConstants, functions,
-            DoubleFunctions().all);
+      : super.random(headSize, tailSize, numTerminals, numConstants, functions);
 
   @override
   genRandomConstants() {
@@ -240,13 +238,16 @@ class DoubleGene extends Gene<double> {
   }
 
   @override
+  Map<Symbol, Func<double>> get allFuncs => DoubleFunctions().all;
+
+  @override
   double get zeroValue => 0.0;
 }
 
 class IntGene extends Gene<int> {
-  IntGene() : super(IntFunctions().all);
+  IntGene() : super();
 
-  IntGene.fromKarva(String karva) : super.fromKarva(karva, IntFunctions().all);
+  IntGene.fromKarva(String karva) : super.fromKarva(karva);
 
   IntGene.random(
       {int headSize,
@@ -254,8 +255,7 @@ class IntGene extends Gene<int> {
       int numTerminals,
       int numConstants,
       List<WeightedSymbol> functions})
-      : super.random(headSize, tailSize, numTerminals, numConstants, functions,
-            IntFunctions().all);
+      : super.random(headSize, tailSize, numTerminals, numConstants, functions);
 
   @override
   genRandomConstants() {
@@ -265,14 +265,16 @@ class IntGene extends Gene<int> {
   }
 
   @override
+  Map<Symbol, Func<int>> get allFuncs => IntFunctions().all;
+
+  @override
   int get zeroValue => 0;
 }
 
 class VectorDoubleGene extends Gene<VectorDouble> {
-  VectorDoubleGene() : super(VectorDoubleFunctions().all);
+  VectorDoubleGene() : super();
 
-  VectorDoubleGene.fromKarva(String karva)
-      : super.fromKarva(karva, VectorDoubleFunctions().all);
+  VectorDoubleGene.fromKarva(String karva) : super.fromKarva(karva);
 
   VectorDoubleGene.random(
       {int headSize,
@@ -280,18 +282,21 @@ class VectorDoubleGene extends Gene<VectorDouble> {
       int numTerminals,
       int numConstants,
       List<WeightedSymbol> functions})
-      : super.random(headSize, tailSize, numTerminals, numConstants, functions,
-            VectorDoubleFunctions().all);
+      : super.random(headSize, tailSize, numTerminals, numConstants, functions);
+
+  // TODO: @override genRandomConstants();
+
+  @override
+  Map<Symbol, Func<VectorDouble>> get allFuncs => VectorDoubleFunctions().all;
 
   @override
   VectorDouble get zeroValue => VectorDouble([]);
 }
 
 class VectorIntGene extends Gene<VectorInt> {
-  VectorIntGene() : super(VectorIntFunctions().all);
+  VectorIntGene() : super();
 
-  VectorIntGene.fromKarva(String karva)
-      : super.fromKarva(karva, VectorIntFunctions().all);
+  VectorIntGene.fromKarva(String karva) : super.fromKarva(karva);
 
   VectorIntGene.random(
       {int headSize,
@@ -299,8 +304,12 @@ class VectorIntGene extends Gene<VectorInt> {
       int numTerminals,
       int numConstants,
       List<WeightedSymbol> functions})
-      : super.random(headSize, tailSize, numTerminals, numConstants, functions,
-            VectorIntFunctions().all);
+      : super.random(headSize, tailSize, numTerminals, numConstants, functions);
+
+  // TODO: @override genRandomConstants();
+
+  @override
+  Map<Symbol, Func<VectorInt>> get allFuncs => VectorIntFunctions().all;
 
   @override
   VectorInt get zeroValue => VectorInt([]);
