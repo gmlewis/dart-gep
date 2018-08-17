@@ -35,6 +35,38 @@ void main() {
       });
     });
 
+    test('VectorBoolGene builds from simple Karva expression', () {
+      var karva = 'And.d0.d1';
+      var gene = VectorBoolGene.fromKarva(karva, vectorBoolNandNodes);
+      expect(gene.symbols, [
+        Symbol('And'),
+        Symbol('d0'),
+        Symbol('d1'),
+      ]);
+      expect(gene.constants, []);
+      expect(gene.headSize, 0);
+      expect(gene.numTerminals, 2);
+      expect(gene.numConstants, 0);
+      expect(gene.zeroValue, VectorBool([]));
+      expect(gene.toString(), karva);
+      expect(gene.argOrder(), [
+        [1, 2],
+        null,
+        null
+      ]);
+      expect(
+          gene.model([
+            VectorBool([false, false, true]),
+            VectorBool([true, false, true]),
+          ]),
+          VectorBool([false, false, true]));
+      expect(gene.symbolMap, {
+        Symbol('And'): 1,
+        Symbol('d0'): 1,
+        Symbol('d1'): 1,
+      });
+    });
+
     test('IntGene builds from simple Karva expression', () {
       var karva = '+.d0.d1';
       var gene = IntGene.fromKarva(karva, allIntNodes);

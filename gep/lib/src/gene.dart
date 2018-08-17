@@ -298,6 +298,28 @@ class IntGene extends Gene<int> {
   int get zeroValue => 0;
 }
 
+class VectorBoolGene extends Gene<VectorBool> {
+  VectorBoolGene(Map<Symbol, Func<VectorBool>> allFuncs) : super(allFuncs);
+
+  VectorBoolGene.fromKarva(String karva, Map<Symbol, Func<VectorBool>> allFuncs)
+      : super.fromKarva(karva, allFuncs);
+
+  VectorBoolGene.random({
+    int headSize,
+    int tailSize,
+    int numTerminals,
+    int numConstants,
+    List<WeightedSymbol> functions,
+    Map<Symbol, Func<VectorBool>> allFuncs,
+  }) : super.random(headSize, tailSize, numTerminals, numConstants, functions,
+            allFuncs);
+
+  // TODO: @override genRandomConstants();
+
+  @override
+  VectorBool get zeroValue => VectorBool([]);
+}
+
 class VectorDoubleGene extends Gene<VectorDouble> {
   VectorDoubleGene(Map<Symbol, Func<VectorDouble>> allFuncs) : super(allFuncs);
 
