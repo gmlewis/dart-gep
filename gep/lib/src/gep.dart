@@ -21,16 +21,16 @@ class GEP {
         numGenomes = actionSpace.spaces.length;
         break;
       default:
-        throw ('$actionSpace not yet supported');
+        throw '$actionSpace not yet supported';
     }
     return GEP(numGenomes: numGenomes);
   }
 
   dynamic evaluate(dynamic observation) {
-    throw ('evaluate not implemented yet');
+    throw 'evaluate not implemented yet';
   }
 
   evolve(double reward) {
-    throw ('evolve not implemented yet');
+    throw 'evolve not implemented yet';
   }
 }
