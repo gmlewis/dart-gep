@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('A group of tests for Genes', () {
-    test('Gene builds from simple Karva expression', () {
+    test('IntGene builds from simple Karva expression', () {
       var karva = '+.d0.d1';
       var gene = IntGene.fromKarva(karva);
       expect(gene.symbols, [
@@ -25,6 +25,98 @@ void main() {
         null
       ]);
       expect(gene.model([1, 2]), 3);
+      expect(gene.symbolMap, {
+        Symbol('+'): 1,
+        Symbol('d0'): 1,
+        Symbol('d1'): 1,
+      });
+    });
+
+    test('DoubleGene builds from simple Karva expression', () {
+      var karva = '+.d0.d1';
+      var gene = DoubleGene.fromKarva(karva);
+      expect(gene.symbols, [
+        Symbol('+'),
+        Symbol('d0'),
+        Symbol('d1'),
+      ]);
+      expect(gene.constants, []);
+      expect(gene.headSize, 0);
+      expect(gene.numTerminals, 2);
+      expect(gene.numConstants, 0);
+      expect(gene.zeroValue, 0);
+      expect(gene.toString(), karva);
+      expect(gene.argOrder(), [
+        [1, 2],
+        null,
+        null
+      ]);
+      expect(gene.model([1.0, 2.0]), 3.0);
+      expect(gene.symbolMap, {
+        Symbol('+'): 1,
+        Symbol('d0'): 1,
+        Symbol('d1'): 1,
+      });
+    });
+
+    test('VectorIntGene builds from simple Karva expression', () {
+      var karva = '+.d0.d1';
+      var gene = VectorIntGene.fromKarva(karva);
+      expect(gene.symbols, [
+        Symbol('+'),
+        Symbol('d0'),
+        Symbol('d1'),
+      ]);
+      expect(gene.constants, []);
+      expect(gene.headSize, 0);
+      expect(gene.numTerminals, 2);
+      expect(gene.numConstants, 0);
+      expect(gene.zeroValue, VectorInt([]));
+      expect(gene.toString(), karva);
+      expect(gene.argOrder(), [
+        [1, 2],
+        null,
+        null
+      ]);
+      expect(
+          gene.model([
+            VectorInt([1, 2, 3, 4, 5, 6, 7, 8, 9]),
+            VectorInt([10, 20, 30, 40, 50, 60, 70, 80, 90]),
+          ]),
+          VectorInt([11, 22, 33, 44, 55, 66, 77, 88, 99]));
+      expect(gene.symbolMap, {
+        Symbol('+'): 1,
+        Symbol('d0'): 1,
+        Symbol('d1'): 1,
+      });
+    });
+
+    test('VectorDoubleGene builds from simple Karva expression', () {
+      var karva = '+.d0.d1';
+      var gene = VectorDoubleGene.fromKarva(karva);
+      expect(gene.symbols, [
+        Symbol('+'),
+        Symbol('d0'),
+        Symbol('d1'),
+      ]);
+      expect(gene.constants, []);
+      expect(gene.headSize, 0);
+      expect(gene.numTerminals, 2);
+      expect(gene.numConstants, 0);
+      expect(gene.zeroValue, VectorDouble([]));
+      expect(gene.toString(), karva);
+      expect(gene.argOrder(), [
+        [1, 2],
+        null,
+        null
+      ]);
+      expect(
+          gene.model([
+            VectorDouble([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]),
+            VectorDouble(
+                [10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0]),
+          ]),
+          VectorDouble([11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0]));
       expect(gene.symbolMap, {
         Symbol('+'): 1,
         Symbol('d0'): 1,

@@ -5,6 +5,7 @@ import 'dart:mirrors';
 import 'package:meta/meta.dart';
 
 import 'functions.dart';
+import 'vector.dart';
 
 /// Gene represents a single GEP gene.
 /// It contains the symbols useds in the gene's expression.
@@ -167,4 +168,24 @@ class IntGene extends Gene<int> {
 
   @override
   int get zeroValue => 0;
+}
+
+class VectorDoubleGene extends Gene<VectorDouble> {
+  VectorDoubleGene() : super(VectorDoubleFunctions().all);
+
+  VectorDoubleGene.fromKarva(String karva)
+      : super.fromKarva(karva, VectorDoubleFunctions().all);
+
+  @override
+  VectorDouble get zeroValue => VectorDouble([]);
+}
+
+class VectorIntGene extends Gene<VectorInt> {
+  VectorIntGene() : super(VectorIntFunctions().all);
+
+  VectorIntGene.fromKarva(String karva)
+      : super.fromKarva(karva, VectorIntFunctions().all);
+
+  @override
+  VectorInt get zeroValue => VectorInt([]);
 }

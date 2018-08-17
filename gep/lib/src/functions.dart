@@ -1,5 +1,7 @@
 // -*- compile-command: "cd ../.. && ./df.sh"; -*-
 
+import 'vector.dart';
+
 typedef T FuncImpl<T>(List<T> input);
 
 /// Func represents a single function represented by
@@ -42,5 +44,33 @@ class IntFunctions extends Functions<int> {
     Symbol('+'): Func<int>('+', 2, (List<int> input) => input[0] + input[1]),
     Symbol('-'): Func<int>('-', 2, (List<int> input) => input[0] - input[1]),
     Symbol('*'): Func<int>('*', 2, (List<int> input) => input[0] * input[1]),
+  };
+}
+
+class VectorDoubleFunctions extends Functions<VectorDouble> {
+  VectorDoubleFunctions() {}
+
+  @override
+  Map<Symbol, Func<VectorDouble>> all = {
+    Symbol('+'): Func<VectorDouble>(
+        '+', 2, (List<VectorDouble> input) => input[0] + input[1]),
+    Symbol('-'): Func<VectorDouble>(
+        '-', 2, (List<VectorDouble> input) => input[0] - input[1]),
+    Symbol('*'): Func<VectorDouble>(
+        '*', 2, (List<VectorDouble> input) => input[0] * input[1]),
+  };
+}
+
+class VectorIntFunctions extends Functions<VectorInt> {
+  VectorIntFunctions() {}
+
+  @override
+  Map<Symbol, Func<VectorInt>> all = {
+    Symbol('+'):
+        Func<VectorInt>('+', 2, (List<VectorInt> input) => input[0] + input[1]),
+    Symbol('-'):
+        Func<VectorInt>('-', 2, (List<VectorInt> input) => input[0] - input[1]),
+    Symbol('*'):
+        Func<VectorInt>('*', 2, (List<VectorInt> input) => input[0] * input[1]),
   };
 }
