@@ -2,8 +2,8 @@
 
 /// WeightedSymbol represents GEP symbol with its weight.
 class WeightedSymbol {
-  WeightedSymbol();
+  WeightedSymbol(String symbolName, this.weight) : symbol = Symbol(symbolName);
 
   Symbol symbol;
-  double weight;
+  int weight;
 }

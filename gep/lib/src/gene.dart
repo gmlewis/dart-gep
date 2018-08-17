@@ -1,11 +1,13 @@
 // -*- compile-command: "cd ../.. && ./df.sh"; -*-
 
+import 'dart:math';
 import 'dart:mirrors';
 
 import 'package:meta/meta.dart';
 
 import 'functions.dart';
 import 'vector.dart';
+import 'weighted_symbol.dart';
 
 /// Gene represents a single GEP gene.
 /// It contains the symbols useds in the gene's expression.
@@ -41,6 +43,52 @@ class Gene<T> {
     model = buildModel(0, ao);
   }
 
+  genRandomConstants() {
+    // Override this.
+    constants = List.generate<T>(numConstants, (index) => zeroValue);
+  }
+
+  // RandomNew generates a new, random gene for further manipulation by the GEP
+  // algorithm. The headSize, tailSize, numTerminals, and numConstants determine the respective
+  // properties of the gene, and functions provide the available functions and
+  // their respective weights to be used in the creation of the gene.
+  Gene.random(this.headSize, int tailSize, this.numTerminals, this.numConstants,
+      List<WeightedSymbol> functions, this.allFuncs) {
+    symbolMap = {};
+    var totalWeight = numTerminals + numConstants;
+    for (var f in functions) {
+      totalWeight += f.weight;
+    }
+    var terminalNames =
+        List.generate<Symbol>(numTerminals, (index) => Symbol('d$index'));
+    var constantNames =
+        List.generate<Symbol>(numConstants, (index) => Symbol('c$index'));
+    genRandomConstants();
+    choiceList = [];
+    choiceList.addAll(terminalNames);
+    choiceList.addAll(constantNames);
+    functions.forEach((fw) {
+      for (var i = 0; i < fw.weight; i++) {
+        choiceList.add(fw.symbol);
+      }
+    });
+    var choices = List.generate<int>(totalWeight, (index) => index);
+    choices.shuffle();
+
+    // head is made up of any symbol (function, input, or constant).
+    var headList = List.generate<Symbol>(
+        headSize, (index) => choiceList[choices[index % choices.length]]);
+    // tail is strictly made up of terminals (input or constant).
+    var tailList = List.generate<Symbol>(tailSize,
+        (index) => choiceList[choices[index % choices.length] % numTerminals]);
+    symbols = [];
+    symbols.addAll(headList);
+    symbols.addAll(tailList);
+
+    // var ao = argOrder();
+    // model = buildModel(0, ao);
+  }
+
   final Map<Symbol, Func<T>> allFuncs;
   List<Symbol> symbols;
   List<T> constants;
@@ -52,6 +100,8 @@ class Gene<T> {
   int numTerminals;
   @visibleForTesting
   int numConstants;
+  @visibleForTesting
+  List<Symbol> choiceList;
 
   // Note that symbolMap does not represent the total number
   // of times each symbol appears in the list, but the total
@@ -67,6 +117,21 @@ class Gene<T> {
     var syms =
         List.generate(symbols.length, (i) => MirrorSystem.getName(symbols[i]));
     return syms.join('.');
+  }
+
+  // mutate mutates a [Gene] by performing a single random symbol exchange within
+  // the [Gene].
+  mutate() {
+    var position = Random().nextInt(symbols.length);
+    if (numTerminals < 2) {
+      // Force choice to be within the head.
+      position %= headSize;
+    }
+    // TODO: Finish this.
+    if (position < headSize) {
+    } else {
+      // Must choose strictly from terminals.
+    }
   }
 
   // argOrder generates a slice of argument indices (1-based) for every function
@@ -105,6 +170,7 @@ class Gene<T> {
       throw 'bad symbolIndex $symbolIndex for symbols $symbols';
     }
     var sym = symbols[symbolIndex];
+    symbolMap[sym] ??= 0;
     symbolMap[sym]++;
     if (allFuncs.containsKey(sym)) {
       var f = allFuncs[sym];
@@ -157,6 +223,22 @@ class DoubleGene extends Gene<double> {
   DoubleGene.fromKarva(String karva)
       : super.fromKarva(karva, DoubleFunctions().all);
 
+  DoubleGene.random(
+      {int headSize,
+      int tailSize,
+      int numTerminals,
+      int numConstants,
+      List<WeightedSymbol> functions})
+      : super.random(headSize, tailSize, numTerminals, numConstants, functions,
+            DoubleFunctions().all);
+
+  @override
+  genRandomConstants() {
+    // Override this.
+    constants =
+        List.generate<double>(numConstants, (index) => Random().nextDouble());
+  }
+
   @override
   double get zeroValue => 0.0;
 }
@@ -165,6 +247,22 @@ class IntGene extends Gene<int> {
   IntGene() : super(IntFunctions().all);
 
   IntGene.fromKarva(String karva) : super.fromKarva(karva, IntFunctions().all);
+
+  IntGene.random(
+      {int headSize,
+      int tailSize,
+      int numTerminals,
+      int numConstants,
+      List<WeightedSymbol> functions})
+      : super.random(headSize, tailSize, numTerminals, numConstants, functions,
+            IntFunctions().all);
+
+  @override
+  genRandomConstants() {
+    // Override this.
+    constants = List.generate<int>(
+        numConstants, (index) => Random().nextInt(1000) - 500);
+  }
 
   @override
   int get zeroValue => 0;
@@ -176,6 +274,15 @@ class VectorDoubleGene extends Gene<VectorDouble> {
   VectorDoubleGene.fromKarva(String karva)
       : super.fromKarva(karva, VectorDoubleFunctions().all);
 
+  VectorDoubleGene.random(
+      {int headSize,
+      int tailSize,
+      int numTerminals,
+      int numConstants,
+      List<WeightedSymbol> functions})
+      : super.random(headSize, tailSize, numTerminals, numConstants, functions,
+            VectorDoubleFunctions().all);
+
   @override
   VectorDouble get zeroValue => VectorDouble([]);
 }
@@ -185,6 +292,15 @@ class VectorIntGene extends Gene<VectorInt> {
 
   VectorIntGene.fromKarva(String karva)
       : super.fromKarva(karva, VectorIntFunctions().all);
+
+  VectorIntGene.random(
+      {int headSize,
+      int tailSize,
+      int numTerminals,
+      int numConstants,
+      List<WeightedSymbol> functions})
+      : super.random(headSize, tailSize, numTerminals, numConstants, functions,
+            VectorIntFunctions().all);
 
   @override
   VectorInt get zeroValue => VectorInt([]);

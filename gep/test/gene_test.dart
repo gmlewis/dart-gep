@@ -174,5 +174,30 @@ void main() {
         Symbol('d1'): 1,
       });
     });
+
+    test('IntGene.random does something reasonable', () {
+      List<WeightedSymbol> functions = [
+        WeightedSymbol('+', 3),
+        WeightedSymbol('-', 2),
+        WeightedSymbol('*', 1),
+      ];
+      var gene = IntGene.random(
+        headSize: 5,
+        tailSize: 8,
+        numTerminals: 4,
+        numConstants: 7,
+        functions: functions,
+      );
+      // TODO: No symbols show up, only terminals and constants.
+      expect(gene.symbols.length, 13);
+      expect(gene.constants.length, 7);
+      expect(gene.headSize, 5);
+      expect(gene.numTerminals, 4);
+      expect(gene.numConstants, 7);
+      expect(gene.zeroValue, 0);
+      expect(gene.toString(), isNot(''));
+      expect(gene.symbolMap, isNotNull);
+      // expect(gene.symbolMap.length, isNot(0));
+    });
   });
 }
