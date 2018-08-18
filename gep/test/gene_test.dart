@@ -239,7 +239,7 @@ void main() {
 
     test('IntGene.random does something reasonable', () {
       List<WeightedSymbol> functions = [
-        WeightedSymbol('+', 3), // maxArity=3
+        WeightedSymbol('+', 3),
         WeightedSymbol('-', 2),
         WeightedSymbol('*', 1),
       ];
@@ -249,8 +249,8 @@ void main() {
         numConstants: 7,
         functions: functions,
       );
-      // TODO: No symbols show up, only terminals and constants.
-      expect(gene.symbols.length, 11); // maxArity=3, 5*(3-1)+1=11
+      expect(
+          gene.symbols.length, 11); // maxArity=2, tailSize=5*(2-1)+1=6, 5+6=11
       expect(gene.constants.length, 7);
       expect(gene.headSize, 5);
       expect(gene.numTerminals, 4);
@@ -258,7 +258,7 @@ void main() {
       expect(gene.zeroValue, 0);
       expect(gene.toString(), isNot(''));
       expect(gene.symbolMap, isNotNull);
-      // expect(gene.symbolMap.length, isNot(0));
+      expect(gene.model([1, 2, 3, 4]), isNotNull);
     });
   });
 }

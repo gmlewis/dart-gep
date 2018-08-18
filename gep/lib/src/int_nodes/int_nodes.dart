@@ -3,7 +3,7 @@
 import '../functions.dart';
 
 // allIntNodes defines the integer functions available for class [IntGene].
-Map<Symbol, Func<int>> allIntNodes = {
+final Map<Symbol, Func<int>> allIntNodes = {
   Symbol('+'): Func<int>('+', 2, (List<int> x) => x[0] + x[1]),
   Symbol('-'): Func<int>('-', 2, (List<int> x) => x[0] - x[1]),
   Symbol('*'): Func<int>('*', 2, (List<int> x) => x[0] * x[1]),

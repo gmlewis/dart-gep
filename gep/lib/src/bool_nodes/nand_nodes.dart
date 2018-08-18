@@ -5,7 +5,7 @@ import 'primitives.dart';
 
 // boolNandNodes defines the boolean functions based on nand
 // available for class [BoolGene].
-Map<Symbol, Func<bool>> boolNandNodes = {
+final Map<Symbol, Func<bool>> boolNandNodes = {
   Symbol('Not'): Func<bool>('Not', 1, (List<bool> x) => gepNand(x[0], x[0])),
   Symbol('And'): Func<bool>('And', 2,
       (List<bool> x) => gepNand(gepNand(x[0], x[1]), gepNand(x[0], x[1]))),

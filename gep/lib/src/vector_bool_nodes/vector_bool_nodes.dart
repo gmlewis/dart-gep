@@ -10,7 +10,7 @@ import '../vector.dart';
 /// available for class [VectorBoolGene].
 ///
 /// For the complete list of nodes, take a look at [boolNandNodes].
-Map<Symbol, Func<VectorBool>> vectorBoolNandNodes = Map.fromIterable(
+final Map<Symbol, Func<VectorBool>> vectorBoolNandNodes = Map.fromIterable(
   boolNandNodes.entries,
   key: (e) => e.key,
   value: (e) => Func<VectorBool>(MirrorSystem.getName(e.key), e.value.terminals,

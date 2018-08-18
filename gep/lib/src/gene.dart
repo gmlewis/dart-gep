@@ -96,8 +96,8 @@ class Gene<T> {
     symbols.addAll(headList);
     symbols.addAll(tailList);
 
-    // var ao = argOrder();
-    // model = buildModel(0, ao);
+    var ao = argOrder();
+    model = buildModel(0, ao);
   }
 
   final Map<Symbol, Func<T>> allFuncs;
@@ -176,7 +176,7 @@ class Gene<T> {
   // expression. While it build, it also builds up the actual symbol
   // usage within [symbolMap].
   @visibleForTesting
-  buildModel(int symbolIndex, List<List<int>> argOrder) {
+  FuncImpl<T> buildModel(int symbolIndex, List<List<int>> argOrder) {
     if (symbolIndex >= symbols.length) {
       throw 'bad symbolIndex $symbolIndex for symbols $symbols';
     }
@@ -203,9 +203,7 @@ class Gene<T> {
         }
         return (List<T> input) {
           if (index >= input.length) {
-            print(
-                'error evaluating gene $sym: index $index >= d length (${input.length})');
-            return 0.0;
+            throw 'error evaluating gene $sym: index $index >= d length (${input.length})';
           }
           return input[index];
         };
@@ -216,9 +214,7 @@ class Gene<T> {
         }
         return (List<T> input) {
           if (index >= constants.length) {
-            print(
-                'error evaluating gene $sym: index $index >= c length (${input.length})');
-            return 0.0;
+            throw 'error evaluating gene $sym: index $index >= c length (${input.length})';
           }
           return constants[index];
         };
@@ -292,7 +288,16 @@ class IntGene extends Gene<int> {
     int numConstants = 5,
     List<WeightedSymbol> functions,
     Map<Symbol, Func<int>> allFuncs,
-  }) : super.random(headSize, numTerminals, numConstants, functions,
+  }) : super.random(
+            headSize,
+            numTerminals,
+            numConstants,
+            functions ??
+                [
+                  WeightedSymbol('+', 3),
+                  WeightedSymbol('-', 2),
+                  WeightedSymbol('*', 1),
+                ],
             allFuncs ?? allIntNodes);
 
   @override

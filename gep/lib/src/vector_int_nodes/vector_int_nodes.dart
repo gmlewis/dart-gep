@@ -5,7 +5,7 @@ import '../vector.dart';
 
 // allVectorIntNodes defines the vector of integer functions available for
 // class [VectorIntGene].
-Map<Symbol, Func<VectorInt>> allVectorIntNodes = {
+final Map<Symbol, Func<VectorInt>> allVectorIntNodes = {
   Symbol('+'): Func<VectorInt>('+', 2, (List<VectorInt> x) => x[0] + x[1]),
   Symbol('-'): Func<VectorInt>('-', 2, (List<VectorInt> x) => x[0] - x[1]),
   Symbol('*'): Func<VectorInt>('*', 2, (List<VectorInt> x) => x[0] * x[1]),
