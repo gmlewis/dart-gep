@@ -252,6 +252,26 @@ void main() {
       expect(
           gene.symbols.length, 11); // maxArity=2, tailSize=5*(2-1)+1=6, 5+6=11
       expect(gene.constants.length, 7);
+      expect(gene.choiceList.length, 17); // 4+7+3+2+1=17
+      expect(gene.choiceList, [
+        Symbol("d0"),
+        Symbol("d1"),
+        Symbol("d2"),
+        Symbol("d3"),
+        Symbol("c0"),
+        Symbol("c1"),
+        Symbol("c2"),
+        Symbol("c3"),
+        Symbol("c4"),
+        Symbol("c5"),
+        Symbol("c6"),
+        Symbol("+"),
+        Symbol("+"),
+        Symbol("+"),
+        Symbol("-"),
+        Symbol("-"),
+        Symbol("*"),
+      ]);
       expect(gene.headSize, 5);
       expect(gene.numTerminals, 4);
       expect(gene.numConstants, 7);

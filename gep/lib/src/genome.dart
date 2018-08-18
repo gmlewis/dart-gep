@@ -20,7 +20,7 @@ abstract class Genome {
     switch (singleActionSpace.name) {
       case 'Discrete':
         shaper = DiscreteShaper(singleActionSpace.n);
-        genes = List.generate(
+        genes = List.generate<IntGene>(
             numGenes,
             (i) => IntGene.random(
                   numTerminals: numTerminals,
@@ -72,7 +72,7 @@ class DiscreteGenome extends Genome {
     // type '(List<int>) => int' is not a subtype of type '(List<dynamic>) => dynamic'
     List<int> x = [observation as int];
     print('x=$x');
-    var val = genes[0].model(x);  // Just for debugging
+    var val = genes[0].model(x); // Just for debugging
     print('genes[0].model($x)=${val}');
     var results = List.generate<int>(genes.length, (i) => genes[i].model(x));
     print('Genome results=$results');
