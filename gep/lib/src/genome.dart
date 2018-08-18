@@ -13,12 +13,18 @@ import 'shaper.dart';
 abstract class Genome {
   Genome({
     int numGenes,
+    int numTerminals,
     Space singleActionSpace,
   })  : assert(numGenes != null),
         assert(singleActionSpace != null) {
     switch (singleActionSpace.name) {
       case 'Discrete':
         shaper = DiscreteShaper(singleActionSpace.n);
+        genes = List.generate(
+            numGenes,
+            (i) => IntGene.random(
+                  numTerminals: numTerminals,
+                ));
         break;
       default:
         throw 'Unsupported singleActionSpace: ${singleActionSpace.name}';
@@ -37,6 +43,14 @@ abstract class Genome {
 
   List<Gene> genes;
   Shaper shaper;
+
+  dynamic model(dynamic observation) {
+    List<dynamic> results =
+        List.generate(genes.length, (i) => genes[i].model(observation));
+    dynamic out = shaper.shape(results);
+    print('Genome results=$results, shaped out=$out');
+    return out;
+  }
 }
 
 /// DiscreteGenome accepts a single integer observation input during evaluation.
@@ -44,5 +58,8 @@ class DiscreteGenome extends Genome {
   DiscreteGenome({
     int numGenes,
     Space singleActionSpace,
-  }) : super(numGenes: numGenes, singleActionSpace: singleActionSpace);
+  }) : super(
+            numGenes: numGenes,
+            numTerminals: 1,
+            singleActionSpace: singleActionSpace);
 }

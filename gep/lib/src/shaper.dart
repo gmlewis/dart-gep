@@ -1,26 +1,21 @@
 // -*- compile-command: "cd ../.. && ./df.sh"; -*-
 
 /// [Shaper] represents a function that shapes the output of the evaluation.
-abstract class Shaper {
+abstract class Shaper<T> {
   Shaper();
 
-  dynamic shape(double val);
+  dynamic shape(T val);
 }
 
 /// [DiscreteShaper] shapes the output as an integer between
 /// 0 (inclusive) and n (exclusive).
-class DiscreteShaper extends Shaper {
+class DiscreteShaper extends Shaper<int> {
   DiscreteShaper(this.n) : super();
 
   final int n;
 
   @override
-  dynamic shape(double val) {
-    if (val.isNaN) return 0;
-    if (val.isInfinite) {
-      if (val.isNegative) return 0;
-      return n - 1;
-    }
-    return val.clamp(0, n - 1).round();
+  int shape(int val) {
+    return val.clamp(0, n - 1);
   }
 }

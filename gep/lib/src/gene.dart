@@ -5,6 +5,13 @@ import 'dart:mirrors';
 
 import 'package:meta/meta.dart';
 
+import 'bool_nodes/nand_nodes.dart';
+import 'double_nodes/double_nodes.dart';
+import 'int_nodes/int_nodes.dart';
+import 'vector_bool_nodes/vector_bool_nodes.dart';
+import 'vector_double_nodes/vector_double_nodes.dart';
+import 'vector_int_nodes/vector_int_nodes.dart';
+
 import 'functions.dart';
 import 'vector.dart';
 import 'weighted_symbol.dart';
@@ -49,16 +56,20 @@ class Gene<T> {
   }
 
   // RandomNew generates a new, random gene for further manipulation by the GEP
-  // algorithm. The headSize, tailSize, numTerminals, and numConstants determine the respective
+  // algorithm. The headSize, numTerminals, and numConstants determine the respective
   // properties of the gene, and functions provide the available functions and
   // their respective weights to be used in the creation of the gene.
-  Gene.random(this.headSize, int tailSize, this.numTerminals, this.numConstants,
+  Gene.random(this.headSize, this.numTerminals, this.numConstants,
       List<WeightedSymbol> functions, this.allFuncs) {
     symbolMap = {};
     var totalWeight = numTerminals + numConstants;
+    var maxArity = 0;
     for (var f in functions) {
       totalWeight += f.weight;
+      final int n = allFuncs[f.symbol].terminals;
+      if (n > maxArity) maxArity = n;
     }
+    int tailSize = headSize * (maxArity - 1) + 1;
     var terminalNames =
         List.generate<Symbol>(numTerminals, (index) => Symbol('d$index'));
     var constantNames =
@@ -224,14 +235,13 @@ class BoolGene extends Gene<bool> {
       : super.fromKarva(karva, allFuncs);
 
   BoolGene.random({
-    int headSize,
-    int tailSize,
+    int headSize = 7,
     int numTerminals,
-    int numConstants,
+    int numConstants = 5,
     List<WeightedSymbol> functions,
     Map<Symbol, Func<bool>> allFuncs,
-  }) : super.random(headSize, tailSize, numTerminals, numConstants, functions,
-            allFuncs);
+  }) : super.random(headSize, numTerminals, numConstants, functions,
+            allFuncs ?? boolNandNodes);
 
   @override
   genRandomConstants() {
@@ -251,14 +261,13 @@ class DoubleGene extends Gene<double> {
       : super.fromKarva(karva, allFuncs);
 
   DoubleGene.random({
-    int headSize,
-    int tailSize,
+    int headSize = 7,
     int numTerminals,
-    int numConstants,
+    int numConstants = 5,
     List<WeightedSymbol> functions,
     Map<Symbol, Func<double>> allFuncs,
-  }) : super.random(headSize, tailSize, numTerminals, numConstants, functions,
-            allFuncs);
+  }) : super.random(headSize, numTerminals, numConstants, functions,
+            allFuncs ?? allDoubleNodes);
 
   @override
   genRandomConstants() {
@@ -278,14 +287,13 @@ class IntGene extends Gene<int> {
       : super.fromKarva(karva, allFuncs);
 
   IntGene.random({
-    int headSize,
-    int tailSize,
+    int headSize = 7,
     int numTerminals,
-    int numConstants,
+    int numConstants = 5,
     List<WeightedSymbol> functions,
     Map<Symbol, Func<int>> allFuncs,
-  }) : super.random(headSize, tailSize, numTerminals, numConstants, functions,
-            allFuncs);
+  }) : super.random(headSize, numTerminals, numConstants, functions,
+            allFuncs ?? allIntNodes);
 
   @override
   genRandomConstants() {
@@ -305,14 +313,13 @@ class VectorBoolGene extends Gene<VectorBool> {
       : super.fromKarva(karva, allFuncs);
 
   VectorBoolGene.random({
-    int headSize,
-    int tailSize,
+    int headSize = 7,
     int numTerminals,
-    int numConstants,
+    int numConstants = 5,
     List<WeightedSymbol> functions,
     Map<Symbol, Func<VectorBool>> allFuncs,
-  }) : super.random(headSize, tailSize, numTerminals, numConstants, functions,
-            allFuncs);
+  }) : super.random(headSize, numTerminals, numConstants, functions,
+            allFuncs ?? vectorBoolNandNodes);
 
   // TODO: @override genRandomConstants();
 
@@ -328,14 +335,13 @@ class VectorDoubleGene extends Gene<VectorDouble> {
       : super.fromKarva(karva, allFuncs);
 
   VectorDoubleGene.random({
-    int headSize,
-    int tailSize,
+    int headSize = 7,
     int numTerminals,
-    int numConstants,
+    int numConstants = 5,
     List<WeightedSymbol> functions,
     Map<Symbol, Func<VectorDouble>> allFuncs,
-  }) : super.random(headSize, tailSize, numTerminals, numConstants, functions,
-            allFuncs);
+  }) : super.random(headSize, numTerminals, numConstants, functions,
+            allFuncs ?? allVectorDoubleNodes);
 
   // TODO: @override genRandomConstants();
 
@@ -350,14 +356,13 @@ class VectorIntGene extends Gene<VectorInt> {
       : super.fromKarva(karva, allFuncs);
 
   VectorIntGene.random({
-    int headSize,
-    int tailSize,
+    int headSize = 7,
     int numTerminals,
-    int numConstants,
+    int numConstants = 5,
     List<WeightedSymbol> functions,
     Map<Symbol, Func<VectorInt>> allFuncs,
-  }) : super.random(headSize, tailSize, numTerminals, numConstants, functions,
-            allFuncs);
+  }) : super.random(headSize, numTerminals, numConstants, functions,
+            allFuncs ?? allVectorIntNodes);
 
   // TODO: @override genRandomConstants();
 
