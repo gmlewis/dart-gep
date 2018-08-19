@@ -44,13 +44,7 @@ abstract class Genome {
   List<Gene> genes;
   Shaper shaper;
 
-  dynamic model(dynamic observation) {
-    var results = List.generate(genes.length, (i) {
-      return genes[i].model(observation);
-    });
-    var out = shaper.shape(results);
-    return out as dynamic;
-  }
+  dynamic model(dynamic observation);
 }
 
 /// DiscreteGenome accepts a single integer observation input during evaluation.
