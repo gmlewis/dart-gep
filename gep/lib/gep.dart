@@ -13,6 +13,7 @@ export 'src/vector_int_nodes/vector_int_nodes.dart';
 
 export 'src/functions.dart';
 export 'src/gene.dart';
+export 'src/generation.dart';
 export 'src/genome.dart';
 
 export 'src/gep.dart';

@@ -3,7 +3,7 @@
 import 'package:gep/gep.dart';
 import 'package:gym/gym.dart';
 
-const defaultNumEpisodes = 20;
+const defaultNumEpisodes = 1000;
 const defaultNumSteps = 100;
 
 main(List<String> arguments) async {
@@ -30,10 +30,16 @@ main(List<String> arguments) async {
   // Start monitoring to a temp directory.
   await client.startMonitor(id, '/tmp/copy-monitor');
 
-  // Run through an episode.
   for (var episode = 1; episode <= numEpisodes; episode++) {
     print('\nStarting episode #$episode...');
-    var obs = await client.reset(id);
+    var obs;
+    try {
+      obs = await client.reset(id);
+    } catch (error) {
+      // Not sure why reset causes problems, but retry until it works.
+      episode--;
+      continue;
+    }
     print('First observation: $obs');
     for (var stepNum = 1; stepNum <= numSteps; stepNum++) {
       var action = gep.evaluate(obs);

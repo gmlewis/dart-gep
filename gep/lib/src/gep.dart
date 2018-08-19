@@ -2,41 +2,47 @@
 
 import 'package:gym/gym.dart'; // OpenAI Gym
 
-import 'genome.dart';
-import 'weighted_symbol.dart';
+import 'generation.dart';
 
-typedef dynamic LinkFunction(dynamic observation, List<dynamic> x);
+const _defaultNumGenerations = 10;
 
 /// Gene Expression Programming (GEP) library in Dart.
 class GEP {
-  GEP({
-    this.genomes,
-    this.weightedSymbols,
-  }) {}
+  GEP({this.numGenerations = _defaultNumGenerations});
 
-  List<Genome> genomes;
-  List<WeightedSymbol> weightedSymbols;
+  ActionSpace actionSpace;
+  Space observationSpace;
 
-  GEP.fromOpenAI(ActionSpace actionSpace, Space observationSpace) {
-    switch (actionSpace.name) {
-      case "Tuple":
-        var numGenomes = actionSpace.spaces.length;
-        genomes = List.generate(numGenomes,
-            (i) => Genome.fromOpenAI(actionSpace.spaces[i], observationSpace));
-        break;
-      default:
-        throw '$actionSpace not yet supported';
-    }
+  Generation current; // The current generation being evaluated.
+
+  int numGenerations; // The number of generations to keep for evolution.
+  List<Generation> generations = [];
+
+  GEP.fromOpenAI(this.actionSpace, this.observationSpace,
+      {this.numGenerations = _defaultNumGenerations}) {
+    current = Generation.fromOpenAI(actionSpace, observationSpace);
   }
 
-  dynamic evaluate(dynamic observation) {
-    List<dynamic> results =
-        List.generate(genomes.length, (i) => genomes[i].model(observation));
-    print('GEP results=$results');
-    return results;
-  }
+  dynamic evaluate(dynamic observation) => current.evaluate(observation);
 
   evolve(double reward) {
-    throw 'evolve not implemented yet';
+    current.reward = reward;
+    if (generations.length < numGenerations) {
+      generations.add(current);
+      current = Generation.fromOpenAI(actionSpace, observationSpace);
+      return;
+    }
+
+    // Sort the generations (descending) by reward, then replace the
+    // lowest score (the last one).
+    generations.sort((a, b) => (1000.0 * (a.reward - b.reward)).round());
+    generations[generations.length - 1] = current;
+
+    // Sort again, and evolve the fittest (the first one) with the
+    // genetic material from the others.
+    generations.sort((a, b) => (1000.0 * (a.reward - b.reward)).round());
+
+    // TODO: Write mutation and generate new 'current'.
+    current = generations[0];
   }
 }
