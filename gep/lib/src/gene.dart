@@ -16,6 +16,8 @@ import 'functions.dart';
 import 'vector.dart';
 import 'weighted_symbol.dart';
 
+typedef T ModelImpl<T>(List<dynamic> input);
+
 /// Gene represents a single GEP gene.
 /// It contains the symbols useds in the gene's expression.
 class Gene<T> {
@@ -103,7 +105,7 @@ class Gene<T> {
   final Map<Symbol, Func<T>> allFuncs;
   List<Symbol> symbols;
   List<T> constants;
-  FuncImpl<T> model;
+  ModelImpl<T> model;
 
   @visibleForTesting
   int headSize;
@@ -176,7 +178,7 @@ class Gene<T> {
   // expression. While it build, it also builds up the actual symbol
   // usage within [symbolMap].
   @visibleForTesting
-  FuncImpl<T> buildModel(int symbolIndex, List<List<int>> argOrder) {
+  ModelImpl<T> buildModel(int symbolIndex, List<List<int>> argOrder) {
     if (symbolIndex >= symbols.length) {
       throw 'bad symbolIndex $symbolIndex for symbols $symbols';
     }
@@ -188,9 +190,9 @@ class Gene<T> {
       var args = argOrder[symbolIndex];
       var funcs = List.generate(
           args.length, (index) => buildModel(args[index], argOrder));
-      return (List<T> input) {
-        var values =
-            List.generate<T>(funcs.length, (index) => funcs[index](input));
+      return (List<dynamic> input) {
+        List<T> x = List.generate<T>(input.length, (i) => input[i] as T);
+        var values = List.generate<T>(funcs.length, (index) => funcs[index](x));
         return f.func(values);
       };
     } else {
@@ -201,18 +203,18 @@ class Gene<T> {
         if (index == null) {
           throw 'unable to parse input index: sym=$symName';
         }
-        return (List<T> input) {
+        return (List<dynamic> input) {
           if (index >= input.length) {
             throw 'error evaluating gene $sym: index $index >= d length (${input.length})';
           }
-          return input[index];
+          return input[index] as T;
         };
       } else if (symName.startsWith('c')) {
         var index = int.tryParse(symName.substring(1));
         if (index == null) {
           throw 'unable to parse constant index: sym=$symName';
         }
-        return (List<T> input) {
+        return (List<dynamic> input) {
           if (index >= constants.length) {
             throw 'error evaluating gene $sym: index $index >= c length (${input.length})';
           }

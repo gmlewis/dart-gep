@@ -45,10 +45,11 @@ abstract class Genome {
   Shaper shaper;
 
   dynamic model(dynamic observation) {
-    var results =
-        List.generate(genes.length, (i) => genes[i].model(observation));
-    dynamic out = shaper.shape(results);
-    return out;
+    var results = List.generate(genes.length, (i) {
+      return genes[i].model(observation);
+    });
+    var out = shaper.shape(results);
+    return out as dynamic;
   }
 }
 
@@ -64,20 +65,8 @@ class DiscreteGenome extends Genome {
 
   @override
   dynamic model(dynamic observation) {
-    print('genes.length=${genes.length}');
-    print('genes.runtimeType=${genes.runtimeType}');
-    print('genes[0].runtimeType=${genes[0].runtimeType}');
-    print(
-        'genes[0].model.runtimeType=${genes[0].model.runtimeType}'); // CRASHES!!!
-    // type '(List<int>) => int' is not a subtype of type '(List<dynamic>) => dynamic'
-    List<int> x = [observation as int];
-    print('x=$x');
-    var val = genes[0].model(x); // Just for debugging
-    print('genes[0].model($x)=${val}');
-    var results = List.generate<int>(genes.length, (i) => genes[i].model(x));
-    print('Genome results=$results');
-    dynamic out = shaper.shape(results);
-    print('Genome shaped out=$out');
-    return out;
+    List<dynamic> x = [observation];
+    var out = shaper.shape(genes[observation as int].model(x));
+    return out as dynamic;
   }
 }
