@@ -1,5 +1,7 @@
 // -*- compile-command: "cd ../.. && ./df.sh"; -*-
 
+import 'dart:math';
+
 import 'package:gym/gym.dart'; // OpenAI Gym
 
 import 'genome.dart';
@@ -31,5 +33,27 @@ class Generation {
         List.generate(genomes.length, (i) => genomes[i].model(observation));
     print('Generation results=$results');
     return results;
+  }
+
+  Generation copy() => Generation(
+      genomes: List.generate(genomes.length, (i) => genomes[i].copy()));
+
+  mutation() {
+    // Determine the total number of genomes to mutate
+    var numGenomes = 1 + Random().nextInt(genomes.length - 1);
+    for (var i = 0; i < numGenomes; i++) {
+      // Pick a random genome
+      var genomeNum = Random().nextInt(genomes.length);
+      var genome = genomes[genomeNum];
+      // Determine the total number of mutations to perform within the genome
+      var numMutations = 1 + Random().nextInt(2);
+      genome.mutate(numMutations);
+    }
+  }
+
+  rebuildModel() {
+    genomes.forEach((genome) {
+      genome.rebuildModel();
+    });
   }
 }

@@ -1,5 +1,7 @@
 // -*- compile-command: "cd ../.. && ./df.sh"; -*-
 
+import 'dart:math';
+
 import 'package:gym/gym.dart'; // OpenAI Gym
 
 import 'gene.dart';
@@ -11,7 +13,9 @@ import 'shaper.dart';
 /// and the final [Shaper] that shapes
 /// the final [Genome] result.
 abstract class Genome {
-  Genome({
+  Genome(this.genes, this.shaper);
+
+  Genome.withSingleActionSpace({
     int numGenes,
     int numTerminals,
     Space singleActionSpace,
@@ -34,28 +38,49 @@ abstract class Genome {
   factory Genome.fromOpenAI(Space singleActionSpace, Space observationSpace) {
     switch (observationSpace.name) {
       case 'Discrete':
-        return DiscreteGenome(
+        return DiscreteGenome.withSingleActionSpace(
             numGenes: observationSpace.n, singleActionSpace: singleActionSpace);
       default:
         throw 'Unsupported Genome observationSpace: ${observationSpace.name}';
     }
   }
 
+  Genome copy();
+
   List<Gene> genes;
   Shaper shaper;
 
   dynamic model(dynamic observation);
+
+  mutate(int numMutations) {
+    for (var i = 0; i < numMutations; i++) {
+      var n = Random().nextInt(genes.length);
+      genes[n].mutate();
+    }
+  }
+
+  rebuildModel() {
+    genes.forEach((gene) {
+      gene.rebuildModel();
+    });
+  }
 }
 
 /// DiscreteGenome accepts a single integer observation input during evaluation.
 class DiscreteGenome extends Genome {
-  DiscreteGenome({
+  DiscreteGenome(List<Gene> genes, Shaper shaper) : super(genes, shaper);
+
+  DiscreteGenome.withSingleActionSpace({
     int numGenes,
     Space singleActionSpace,
-  }) : super(
+  }) : super.withSingleActionSpace(
             numGenes: numGenes,
             numTerminals: 1,
             singleActionSpace: singleActionSpace);
+
+  @override
+  DiscreteGenome copy() => DiscreteGenome(
+      List.generate(genes.length, (i) => genes[i].copy()), shaper);
 
   @override
   dynamic model(dynamic observation) {

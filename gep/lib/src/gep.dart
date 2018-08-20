@@ -42,7 +42,17 @@ class GEP {
     // genetic material from the others.
     generations.sort((a, b) => (1000.0 * (a.reward - b.reward)).round());
 
-    // TODO: Write mutation and generate new 'current'.
-    current = generations[0];
+    current = generations[0].copy();
+
+    // current.replication(); // Section 3.3.1, book page 75
+    current.mutation(); // Section 3.3.2, book page 77
+    // current.isTransposition()
+    // current.risTransposition()
+    // current.geneTransposition()
+    // current.onePointRecombination()
+    // current.twoPointRecombination()
+    // current.geneRecombination()
+
+    current.rebuildModel();
   }
 }

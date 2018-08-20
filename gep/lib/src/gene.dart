@@ -21,7 +21,17 @@ typedef T ModelImpl<T>(List<dynamic> input);
 /// Gene represents a single GEP gene.
 /// It contains the symbols useds in the gene's expression.
 class Gene<T> {
-  Gene(this.allFuncs) {}
+  Gene(
+    this.allFuncs, {
+    this.symbols,
+    this.constants,
+    this.model,
+    this.headSize,
+    this.numTerminals,
+    this.numConstants,
+    this.choiceList,
+    this.symbolMap,
+  }) {}
 
   /// Creates a new gene based on the Karva string representation.
   Gene.fromKarva(String karva, this.allFuncs)
@@ -48,13 +58,7 @@ class Gene<T> {
     constants = List<T>.filled(numConstants, zeroValue);
     numTerminals = numInputs + numConstants;
 
-    var ao = argOrder();
-    model = buildModel(0, ao);
-  }
-
-  genRandomConstants() {
-    // Override this.
-    constants = List.generate<T>(numConstants, (index) => zeroValue);
+    rebuildModel();
   }
 
   // RandomNew generates a new, random gene for further manipulation by the GEP
@@ -98,8 +102,7 @@ class Gene<T> {
     symbols.addAll(headList);
     symbols.addAll(tailList);
 
-    var ao = argOrder();
-    model = buildModel(0, ao);
+    rebuildModel();
   }
 
   final Map<Symbol, Func<T>> allFuncs;
@@ -125,11 +128,33 @@ class Gene<T> {
 
   T get zeroValue => null;
 
+  Gene copy() => Gene(
+        allFuncs,
+        symbols: List.generate(symbols.length, (i) => symbols[i]),
+        constants: List.generate(constants.length, (i) => constants[i]),
+        model: model,
+        headSize: headSize,
+        numTerminals: numTerminals,
+        numConstants: numConstants,
+        choiceList: choiceList,
+        symbolMap: symbolMap,
+      );
+
+  genRandomConstants() {
+    // Override this.
+    constants = List.generate<T>(numConstants, (index) => zeroValue);
+  }
+
   // toString returns the Karva representation of the Gene.
   String toString() {
     var syms =
         List.generate(symbols.length, (i) => MirrorSystem.getName(symbols[i]));
     return syms.join('.');
+  }
+
+  rebuildModel() {
+    var ao = argOrder();
+    model = buildModel(0, ao);
   }
 
   // mutate mutates a [Gene] by performing a single random symbol exchange within
@@ -140,11 +165,28 @@ class Gene<T> {
       // Force choice to be within the head.
       position %= headSize;
     }
-    // TODO: Finish this.
+
     if (position < headSize) {
+      if (choiceList.length < 2) {
+        throw 'must have choice of more than one function: choiceList=$choiceList';
+      }
+      var symbol = symbols[position];
+      for (; symbol == symbols[position];) {
+        // Force new symbol to be difference from old one
+        var n = Random().nextInt(choiceList.length);
+        symbol = choiceList[n];
+      }
+      symbols[position] = symbol;
     } else {
       // Must choose strictly from terminals.
+      var terminal = symbols[position];
+      for (; terminal == symbols[position];) {
+        var n = Random().nextInt(numTerminals);
+        terminal = choiceList[n];
+      }
+      symbols[position] = terminal;
     }
+    model = null; // Invalidate.
   }
 
   // argOrder generates a slice of argument indices (1-based) for every function
@@ -191,9 +233,37 @@ class Gene<T> {
       var funcs = List.generate(
           args.length, (index) => buildModel(args[index], argOrder));
       return (List<dynamic> input) {
+        print('model: symbols=$symbols');
+        print('model: constants=$constants');
+        print('model: symbolIndex=$symbolIndex');
+        print('model: args=$args');
+        print('model: sym=$sym');
+        print('model: input=$input');
         List<T> x = List.generate<T>(input.length, (i) => input[i] as T);
+        print('model: x=$x');
         var values = List.generate<T>(funcs.length, (index) => funcs[index](x));
-        return f.func(values);
+        print('model: values=$values');
+
+// Occassional crash:
+// Unhandled exception:
+// type '(List<int>) => int' is not a subtype of type '(List<dynamic>) => dynamic'
+// #0      Gene.buildModel.<anonymous closure> (package:gep/src/gene.dart)
+// #1      Gene.buildModel.<anonymous closure>.<anonymous closure> (package:gep/src/gene.dart:244:76)
+// #2      new List.generate (dart:core/list.dart:162:28)
+// #3      Gene.buildModel.<anonymous closure> (package:gep/src/gene.dart:244:27)
+// #4      Gene.buildModel.<anonymous closure>.<anonymous closure> (package:gep/src/gene.dart:244:76)
+// #5      new List.generate (dart:core/list.dart:162:28)
+// #6      Gene.buildModel.<anonymous closure> (package:gep/src/gene.dart:244:27)
+// #7      DiscreteGenome.model (package:gep/src/genome.dart:88:54)
+// #8      Generation.evaluate.<anonymous closure> (package:gep/src/generation.dart:33:57)
+// #9      new List.generate (dart:core/list.dart:162:28)
+// #10     Generation.evaluate (package:gep/src/generation.dart:33:14)
+// #11     GEP.evaluate (package:gep/src/gep.dart:26:52)
+// #12     main (file:///home/glenn/src/github.com/gmlewis/dart-gep/demo/openai-gym/algorithms/copy-v0/bin/main.dart:45:24)
+
+        var result = f.func(values);
+        print('model: result=$result');
+        return result;
       };
     } else {
       var symName = MirrorSystem.getName(sym);

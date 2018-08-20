@@ -94,6 +94,44 @@ void main() {
       });
     });
 
+    test('IntGene builds from two-deep Karva expression', () {
+      var karva = '+.-.-.d0.d1.d2.d3';
+      var gene = IntGene.fromKarva(karva, allIntNodes);
+      expect(gene.symbols, [
+        Symbol('+'),
+        Symbol('-'),
+        Symbol('-'),
+        Symbol('d0'),
+        Symbol('d1'),
+        Symbol('d2'),
+        Symbol('d3'),
+      ]);
+      expect(gene.constants, []);
+      expect(gene.headSize, 0);
+      expect(gene.numTerminals, 4);
+      expect(gene.numConstants, 0);
+      expect(gene.zeroValue, 0);
+      expect(gene.toString(), karva);
+      expect(gene.argOrder(), [
+        [1, 2],
+        [3, 4],
+        [5, 6],
+        null,
+        null,
+        null,
+        null
+      ]);
+      expect(gene.model([1, 2, 3, 5]), -3);
+      expect(gene.symbolMap, {
+        Symbol('+'): 1,
+        Symbol('-'): 2,
+        Symbol('d0'): 1,
+        Symbol('d1'): 1,
+        Symbol('d2'): 1,
+        Symbol('d3'): 1,
+      });
+    });
+
     test('DoubleGene builds from simple Karva expression', () {
       var karva = '+.d0.d1';
       var gene = DoubleGene.fromKarva(karva, allDoubleNodes);
